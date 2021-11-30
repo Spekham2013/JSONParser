@@ -1,0 +1,5 @@
+test/src/test-JSONParser.c:44:TEST_settings_getBool:FAIL: Expected FALSE Was TRUE
+
+-----------------------
+1 Tests 1 Failures 0 Ignored 
+FAIL
