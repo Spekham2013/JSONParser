@@ -13,11 +13,13 @@
 int8_t   settings_Open(void);
 void     settings_Close(void);
 
-int8_t settings_getString   (char* key, char* value);
-int8_t settings_getInt      (char* key, int*  value);
-int8_t settings_getBool     (char* key, bool*  value);
+int8_t settings_getString           (char* key, char* value);
+int8_t settings_getInt              (char* key, int*  value);
+int8_t settings_getBool             (char* key, bool*  value);
 
-int8_t settings_Single_getValue   (char* key, char* value, uint32_t atLine);
-// int8_t settings_Array_getValue    (char* key, char* value, uint32_t atLine);
+int8_t settings_getString_Array     (char* key, char (*value)[BUFFERSIZE], uint16_t* length);
+
+int8_t settings_Single_getValue     (char* key, char*  value, uint32_t atLine);
+int8_t settings_Array_getValue      (char* key, char (*value)[BUFFERSIZE], uint16_t* length, uint32_t atLine);
 
 #endif

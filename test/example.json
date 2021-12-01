@@ -19,7 +19,16 @@
             "number": "646 555-4567"
         }
     ],
-    "children": [],
+    "children": {
+        "person1": [
+            "Jack",
+            "Doe"
+        ],
+        "person2": [
+            "Piet",
+            "Puck"
+        ]
+    },
     "spouse": null,
     "city": "San fransico"
 }
