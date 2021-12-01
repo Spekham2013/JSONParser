@@ -185,14 +185,10 @@ int8_t settings_Single_getValue(char* key, char* value, uint32_t atLine) {
         // Prevent program of finding matching with keywords inside of objects/arrays
         if (pointer == NULL && (strchr(buffer, '{') != NULL || strchr(buffer, '[') != NULL)) {
             // Prevent from triggering on first line
-
-            // TODO: Fix and check for first {
             if (currentLine != 1) {
                 arrayObjectFlag += 1;
             }
-        }
-
-        if (strchr(buffer, '}') != NULL || strchr(buffer, ']') != NULL) {
+        } else if (strchr(buffer, '}') != NULL || strchr(buffer, ']') != NULL) {
             arrayObjectFlag -= 1;
         }
 
@@ -267,6 +263,8 @@ int8_t settings_Single_getValue(char* key, char* value, uint32_t atLine) {
 }
 
 int8_t settings_Array_getValue(char* key, char (*value)[BUFFERSIZE], uint16_t* length, uint32_t atLine) {
+    uint8_t ret = -1;
+
     char   keyword[64];
     strcpy(keyword, key);
 
@@ -295,33 +293,37 @@ int8_t settings_Array_getValue(char* key, char (*value)[BUFFERSIZE], uint16_t* l
         // Prevent program of finding matching with keywords inside of objects/arrays
         if (pointer == NULL && (strchr(buffer, '{') != NULL || strchr(buffer, '[') != NULL)) {
             // Prevent from triggering on first line
-
-            // TODO: Fix and check for first {
             if (currentLine != 1) {
                 arrayObjectFlag += 1;
             }
-        }
-
-        if (strchr(buffer, '}') != NULL || strchr(buffer, ']') != NULL) {
+        }else if (strchr(buffer, '}') != NULL || strchr(buffer, ']') != NULL) {
             arrayObjectFlag -= 1;
         }
 
         // Entering value extracting or entering new level
         if (pointer != NULL && arrayObjectFlag == 0) {
             if (pointer != NULL && ((strchr(buffer, '[') != NULL) || enteredArray)) {
-                // Entering array
+                // We have entered the array
                 enteredArray = true;
 
-                // At correct depth
-                if (strrchr(keyword, '/') == NULL) {
+                char* slashPointer1 = strrchr(key, '/');
+
+                if (slashPointer1 == NULL) {
+                    // Inside the correct array
                     
                     // Extracting values
+                    int rowcount = 0;
                     while(fgets(buffer, sizeof(buffer), filePointer)) {
+                        currentLine++;
+
                         char* commaPointer = strrchr(buffer, ',');
 
                         char* bracketPointer = strrchr(buffer, ']');
                         if (bracketPointer != NULL) {
-                            return SUCCES;
+                            *length = rowcount;
+
+                            ret = SUCCES;
+                            goto RETURN;
                         }
 
                         bool lastItem = false;
@@ -349,10 +351,10 @@ int8_t settings_Array_getValue(char* key, char (*value)[BUFFERSIZE], uint16_t* l
                             // Value found
                             *commaPointer = '\0';
 
-                            // Find beginning of the string
                             char* colonPointer = strchr(pointer, '"');
                             if (colonPointer == NULL) {
-                                return -1;
+                                ret = -1;
+                                goto RETURN;
                             }
 
                             // Copy over string and make sure to not change the string
@@ -365,33 +367,50 @@ int8_t settings_Array_getValue(char* key, char (*value)[BUFFERSIZE], uint16_t* l
                                 }
 
                                 if (colonPointer[i] != ' ' || Apostrophe) {
-                                    value[i][j++] = colonPointer[i];
+                                    value[rowcount][j++] = colonPointer[i];
                                 }
                                 i++;
                             }
-                            value[i][j++] = '\0';
+                            value[rowcount][j++] = '\0';
 
                             // Check to make sure the value isn't null
                             if (strcmp(value[i], "null") == 0) {
-                                return -1;
+                                ret = -1;
+                                goto RETURN;
                             }
 
+                            rowcount++;
                         } else {
-                            return -1;
+                            ret = -1;
+                            goto RETURN;
                         }
                     }
+                } else {
+                    // If object inside array
+                    bool exitElementFlag = false;
+                    char miniBuffer[BUFFERSIZE];
+                        
+                    while(fgets(buffer, sizeof(buffer), filePointer)) {
+                        currentLine++;
+
+                        if (settings_Single_getValue(slashPointer+1, miniBuffer, currentLine) != SUCCES && !exitElementFlag) {
+                            ret = -1;
+                            goto RETURN;
+                        } else {
+                            exitElementFlag = true;
+                        }
+
+                    }
+
+                    return SUCCES;
+
                 }
-            } else {
-                return settings_Array_getValue(slashPointer+1, *value, length, currentLine);
             }
         }
     }
 
+    RETURN:
+        enteredArray = false;
 
-    // strcpy(value[0], "\"Jack\"");
-    // strcpy(value[1], "\"Doe\"");
-
-    // *length = 2;
-
-    return SUCCES;
+        return ret;
 }

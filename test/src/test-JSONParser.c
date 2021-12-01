@@ -52,7 +52,7 @@ void TEST_settings_getString_Array(void) {
         "Jack",
         "Doe"
     };
-    settings_getString_Array("children/person1", *buffer, &length);
+    settings_getString_Array("address/person1", *buffer, &length);
     TEST_ASSERT_EQUAL_STRING(test1[0], buffer[0]);
     TEST_ASSERT_EQUAL_STRING(test1[1], buffer[1]);
 

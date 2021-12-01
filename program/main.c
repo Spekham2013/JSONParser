@@ -6,7 +6,8 @@ int main() {
     char  buffer[16][BUFFERSIZE];
 
     uint16_t length;
-    settings_getString_Array("children/person1", *buffer, &length);
+
+    settings_getString_Array("phoneNumbers/type", *buffer, &length);
 
     return 0;
 }
