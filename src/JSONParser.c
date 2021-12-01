@@ -1,33 +1,10 @@
 #include "JSONParser.h"
 
-FILE *filePointer;
-
 // 
 // Variables
 // 
 static uint32_t currentLine = 0;
-
-// 
-// Init functions
-// 
-int8_t settings_Open(void) {
-    filePointer = fopen("/home/stephan/Documents/Synced/Projects/JSONParser/test/example.json","r");
-
-    if (filePointer == NULL) {
-        // Log: File pointer not found
-        printf("Encountered ERROR");
-        return -1;
-    }
-
-    return 0;
-}
-
-void   settings_Close(void) {
-    // Close file if pointer exists
-    if (filePointer != NULL) {
-        fclose(filePointer);
-    }
-}
+FILE *filePointer;
 
 // 
 // Single functions
@@ -157,6 +134,29 @@ int8_t settings_getString_Array(char* key, char (*value)[BUFFERSIZE], uint16_t* 
 
     return ret;
 }
+
+// 
+// Initializing functions
+// 
+int8_t settings_Open(void) {
+    filePointer = fopen("/home/stephan/Documents/Synced/Projects/JSONParser/test/example.json","r");
+
+    if (filePointer == NULL) {
+        // Log: File pointer not found
+        printf("Encountered ERROR");
+        return -1;
+    }
+
+    return 0;
+}
+
+void   settings_Close(void) {
+    // Close file if pointer exists
+    if (filePointer != NULL) {
+        fclose(filePointer);
+    }
+}
+
 
 // 
 // getValue functions
