@@ -7,7 +7,7 @@ int main() {
 
     uint16_t length;
 
-    settings_getString_Array("phoneNumbers/type", *buffer, &length);
+    uint8_t errorCode = settings_getString_Array("phoneNumbers/type", *buffer, &length);
 
     return 0;
 }

@@ -2,11 +2,15 @@
 
 FILE *filePointer;
 
-// TODO: Convert to static variable
-uint32_t settings_FileLines;
+// 
+// Variables
+// 
+static uint32_t currentLine = 0;
 
+// 
+// Init functions
+// 
 int8_t settings_Open(void) {
-    settings_FileLines = 0;
     filePointer = fopen("/home/stephan/Documents/Synced/Projects/JSONParser/test/example.json","r");
 
     if (filePointer == NULL) {
@@ -15,19 +19,10 @@ int8_t settings_Open(void) {
         return -1;
     }
 
-    // Get the amount of lines in the file
-    char buffer[BUFFERSIZE];
-    while(fgets(buffer, sizeof(buffer), filePointer) != NULL) {
-        settings_FileLines++;
-    }
-    rewind(filePointer);
-
     return 0;
 }
 
 void   settings_Close(void) {
-    settings_FileLines = 0;
-
     // Close file if pointer exists
     if (filePointer != NULL) {
         fclose(filePointer);
@@ -47,7 +42,8 @@ int8_t settings_getString   (char* key, char* value) {
     }
 
     char buffer[BUFFERSIZE];
-    if (settings_Single_getValue(key, buffer, 0) != SUCCES) {
+    currentLine = 0;
+    if (settings_Single_getValue(key, buffer, false) != SUCCES) {
         ret = -1;
     } else {
         // Seperate apostrophe from the string and then copy over
@@ -78,7 +74,8 @@ int8_t settings_getInt      (char* key, int*  value) {
     }
 
     char buffer[BUFFERSIZE];
-    if (settings_Single_getValue(key, buffer, 0) != SUCCES) {
+    currentLine = 0;
+    if (settings_Single_getValue(key, buffer, false) != SUCCES) {
         ret = -1;
     } else {
         // Convert string value to int
@@ -101,7 +98,8 @@ int8_t settings_getBool     (char* key, bool*  value) {
     }
 
     char buffer[BUFFERSIZE];
-    if (settings_Single_getValue(key, buffer, 0) != SUCCES) {
+    currentLine = 0;
+    if (settings_Single_getValue(key, buffer, false) != SUCCES) {
         ret = -1;
     } else {
         // Convert string value to bool
@@ -133,7 +131,8 @@ int8_t settings_getString_Array(char* key, char (*value)[BUFFERSIZE], uint16_t* 
     char buffer[BUFFERSIZE];
     *length = 0;
 
-    if (settings_Array_getValue(key, value, length, 0) != SUCCES) {
+    currentLine = 0;
+    if (settings_Array_getValue(key, value, length) != SUCCES) {
         ret = -1;
     } else {
         for (uint16_t row = 0; row < *length; row++) {
@@ -162,7 +161,7 @@ int8_t settings_getString_Array(char* key, char (*value)[BUFFERSIZE], uint16_t* 
 // 
 // getValue functions
 // 
-int8_t settings_Single_getValue(char* key, char* value, uint32_t atLine) {
+int8_t settings_Single_getValue(char* key, char* value, bool ignoreBraces) {
     char   keyword[64];
     strcpy(keyword, key);
 
@@ -175,7 +174,6 @@ int8_t settings_Single_getValue(char* key, char* value, uint32_t atLine) {
     // Find line containing keyword
     char buffer[BUFFERSIZE];
 
-    uint32_t currentLine = atLine;
     uint8_t arrayObjectFlag = 0;
     while (fgets(buffer, sizeof(buffer), filePointer)) {
         currentLine++;
@@ -183,13 +181,20 @@ int8_t settings_Single_getValue(char* key, char* value, uint32_t atLine) {
         char* pointer = strstr(buffer, keyword);
 
         // Prevent program of finding matching with keywords inside of objects/arrays
-        if (pointer == NULL && (strchr(buffer, '{') != NULL || strchr(buffer, '[') != NULL)) {
+        if (ignoreBraces == false) {
+            if (pointer == NULL && (strchr(buffer, '{') != NULL || strchr(buffer, '[') != NULL)) {
             // Prevent from triggering on first line
             if (currentLine != 1) {
                 arrayObjectFlag += 1;
             }
-        } else if (strchr(buffer, '}') != NULL || strchr(buffer, ']') != NULL) {
-            arrayObjectFlag -= 1;
+
+            } else if (strchr(buffer, '}') != NULL || strchr(buffer, ']') != NULL) {
+                arrayObjectFlag -= 1;
+            }
+        } else {
+            if (strchr(buffer, ']') != NULL) {
+                return -1;
+            }
         }
 
         // Entering value extracting or entering new level
@@ -254,7 +259,7 @@ int8_t settings_Single_getValue(char* key, char* value, uint32_t atLine) {
                 return SUCCES;
 
             } else {
-                return settings_Single_getValue(slashPointer+1, value, currentLine);
+                return settings_Single_getValue(slashPointer+1, value, false);
             }
         }
     }
@@ -262,7 +267,7 @@ int8_t settings_Single_getValue(char* key, char* value, uint32_t atLine) {
     return -1;
 }
 
-int8_t settings_Array_getValue(char* key, char (*value)[BUFFERSIZE], uint16_t* length, uint32_t atLine) {
+int8_t settings_Array_getValue(char* key, char (*value)[BUFFERSIZE], uint16_t* length) {
     uint8_t ret = -1;
 
     char   keyword[64];
@@ -277,9 +282,7 @@ int8_t settings_Array_getValue(char* key, char (*value)[BUFFERSIZE], uint16_t* l
     // Find line containing keyword
     char buffer[BUFFERSIZE];
 
-    uint32_t currentLine      = atLine;
     uint8_t  arrayObjectFlag  = 0;
-
     static bool enteredArray;
     if (enteredArray != true) {
         enteredArray = false;
@@ -374,7 +377,7 @@ int8_t settings_Array_getValue(char* key, char (*value)[BUFFERSIZE], uint16_t* l
                             value[rowcount][j++] = '\0';
 
                             // Check to make sure the value isn't null
-                            if (strcmp(value[i], "null") == 0) {
+                            if (strcmp(value[rowcount], "null") == 0) {
                                 ret = -1;
                                 goto RETURN;
                             }
@@ -387,23 +390,59 @@ int8_t settings_Array_getValue(char* key, char (*value)[BUFFERSIZE], uint16_t* l
                     }
                 } else {
                     // If object inside array
-                    bool exitElementFlag = false;
                     char miniBuffer[BUFFERSIZE];
                         
+                    uint16_t elementcounter = 0;
                     while(fgets(buffer, sizeof(buffer), filePointer)) {
                         currentLine++;
 
-                        if (settings_Single_getValue(slashPointer+1, miniBuffer, currentLine) != SUCCES && !exitElementFlag) {
-                            ret = -1;
-                            goto RETURN;
+                        // Terminate string to avoid problems
+                        miniBuffer[0] = '\0';
+
+                        if (settings_Single_getValue(slashPointer+1, miniBuffer, true) == SUCCES) {
+                            uint8_t i = 0;
+                            uint8_t j = 0;
+                            bool Apostrophe = false;
+
+                            while(miniBuffer[i] != '\0') {
+                                if (miniBuffer[i] == '"') {
+                                    Apostrophe = !Apostrophe;
+                                }
+
+                                if (miniBuffer[i] != ' ' || Apostrophe) {
+                                    value[elementcounter][j++] = miniBuffer[i];
+                                }
+
+                                i++;
+                            }
+                            value[elementcounter][j++] = '\0';
+
+                            // Check to make sure the value isn't null
+                            if (strcmp(value[elementcounter], "null") == 0) {
+                                ret = -1;
+                                goto RETURN;
+                            }
+
+                            elementcounter++;
                         } else {
-                            exitElementFlag = true;
+                            if (elementcounter == 0) {
+                                ret = -1;
+                                goto RETURN;
+                            }
+                            *length = elementcounter;
+
+                            break;
                         }
 
                     }
-
                     return SUCCES;
-
+                }
+            } else {
+                if (settings_Array_getValue(slashPointer+1, value, length) == SUCCES) {
+                    return SUCCES;
+                } else {
+                    ret = -1;
+                    goto RETURN;
                 }
             }
         }
@@ -411,6 +450,5 @@ int8_t settings_Array_getValue(char* key, char (*value)[BUFFERSIZE], uint16_t* l
 
     RETURN:
         enteredArray = false;
-
         return ret;
 }
