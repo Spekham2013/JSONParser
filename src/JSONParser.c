@@ -9,6 +9,14 @@ FILE *filePointer;
 // 
 // Single functions
 // 
+
+/**
+* This function is used to get a distinct string value from a 
+* certain key. It by calling the settings_Single_getValue(..) 
+* function which retrieves the string with qoutes. The 
+* function then removes the qoutes and writes the value to 
+* the output.
+*/
 int8_t settings_getString   (char* key, char* value) {
     int8_t ret = -1;
 
@@ -41,6 +49,12 @@ int8_t settings_getString   (char* key, char* value) {
     return ret;
 }
 
+/**
+* This function is used to get a distinct integer value from a 
+* certain key. It by calling the settings_Single_getValue(..) 
+* function which retrieves the int. The function then converts
+* the string to an int with the atoi function.
+*/
 int8_t settings_getInt      (char* key, int*  value) {
     int8_t ret = -1;
 
@@ -65,6 +79,12 @@ int8_t settings_getInt      (char* key, int*  value) {
     return ret;
 }
 
+/**
+* This function is used to get a distinct bool value from a 
+* certain key. It by calling the settings_Single_getValue(..) 
+* function which retrieves the bool. The function then converts
+* the string to an int by checking for the presence of a letter T.
+*/
 int8_t settings_getBool     (char* key, bool*  value) {
     int8_t ret = -1;
 
@@ -96,6 +116,13 @@ int8_t settings_getBool     (char* key, bool*  value) {
 // 
 // Array functions
 // 
+
+/**
+* This function is used to get a multiple string values from a 
+* certain key. It by calling the settings_Array_getValue(..) 
+* function which retrieves the strings. The function then removes
+* the " from the string and copies it to the output value.
+*/
 int8_t settings_getString_Array(char* key, char (*value)[BUFFERSIZE], uint16_t* length) {
     int8_t ret = -1;
 
@@ -135,9 +162,93 @@ int8_t settings_getString_Array(char* key, char (*value)[BUFFERSIZE], uint16_t* 
     return ret;
 }
 
+/**
+* This function is used to get a multiple int values from a 
+* certain key. It by calling the settings_Array_getValue(..) 
+* function which retrieves the ints. The function then converts
+* the strings into ints using the atoi function.
+*/
+int8_t settings_getInt_Array(char* key, int value[], uint16_t* length) {
+    int8_t ret = -1;
+
+    // Open file
+    if (settings_Open() != SUCCES) {
+        // Log: File couldn't be openend
+        return ret;
+    }
+
+    char buffer[BUFFERSIZE];
+    char bufferBuffer[64][BUFFERSIZE];
+    *length = 0;
+
+    currentLine = 0;
+    if (settings_Array_getValue(key, bufferBuffer, length) != SUCCES) {
+        ret = -1;
+    } else {
+        for (uint16_t row = 0; row < *length; row++) {
+            // First strcpy string into buffer
+            strcpy(buffer, bufferBuffer[row]);
+            
+            int bloop = value[row];
+            value[row] = atoi(buffer);
+        }
+
+        ret = 0;
+    }
+    settings_Close();
+
+    return ret;
+}
+
+/**
+* This function is used to get a multiple bool values from a 
+* certain key. It by calling the settings_Array_getValue(..) 
+* function which retrieves the bools. The function then converts
+* the strings into bools by looking for the letter T.
+*/
+int8_t settings_getBool_Array(char* key, bool value[], uint16_t* length) {
+    int8_t ret = -1;
+
+    // Open file
+    if (settings_Open() != SUCCES) {
+        // Log: File couldn't be openend
+        return ret;
+    }
+
+    char buffer[BUFFERSIZE];
+    char bufferBuffer[64][BUFFERSIZE];
+    *length = 0;
+
+    currentLine = 0;
+    if (settings_Array_getValue(key, bufferBuffer, length) != SUCCES) {
+        ret = -1;
+    } else {
+        for (uint16_t row = 0; row < *length; row++) {
+            // First strcpy string into buffer
+            strcpy(buffer, bufferBuffer[row]);
+            
+            // Convert string value to bool
+            if (strchr(buffer, 't') != NULL || strchr(buffer, 'T') != NULL ) {
+                value[row] = true;
+            } else {
+                value[row] = false;
+            }
+        }
+
+        ret = 0;
+    }
+    settings_Close();
+
+    return ret;
+}
+
 // 
 // Initializing functions
 // 
+
+/**
+* This function is used to open a file pointer
+*/
 int8_t settings_Open(void) {
     filePointer = fopen("/home/stephan/Documents/Synced/Projects/JSONParser/test/example.json","r");
 
@@ -150,6 +261,9 @@ int8_t settings_Open(void) {
     return 0;
 }
 
+/**
+* This function is used to close a file pointer
+*/
 void   settings_Close(void) {
     // Close file if pointer exists
     if (filePointer != NULL) {
@@ -161,6 +275,14 @@ void   settings_Close(void) {
 // 
 // getValue functions
 // 
+
+/**
+* This function is used to retrieve a single string. This
+* function is not be called by anyone outside this library.
+* The variable ignoreBraces is used for retreiving values
+* inside arrays and is only used by the settings_Array_getValue
+* function.
+*/
 int8_t settings_Single_getValue(char* key, char* value, bool ignoreBraces) {
     char   keyword[64];
     strcpy(keyword, key);
@@ -267,6 +389,12 @@ int8_t settings_Single_getValue(char* key, char* value, bool ignoreBraces) {
     return -1;
 }
 
+/**
+* This function is used to retrieve an array of string. This
+* function is not be called by anyone outside this library.
+* Do note that the buffersize must be defined otherwise it is not
+* how big the buffer wil be.
+*/
 int8_t settings_Array_getValue(char* key, char (*value)[BUFFERSIZE], uint16_t* length) {
     uint8_t ret = -1;
 
@@ -356,8 +484,7 @@ int8_t settings_Array_getValue(char* key, char (*value)[BUFFERSIZE], uint16_t* l
 
                             char* colonPointer = strchr(pointer, '"');
                             if (colonPointer == NULL) {
-                                ret = -1;
-                                goto RETURN;
+                                colonPointer = buffer;
                             }
 
                             // Copy over string and make sure to not change the string

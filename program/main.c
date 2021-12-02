@@ -3,11 +3,11 @@
 #include "../src/JSONParser.h"
 
 int main() {
-    char  buffer[16][BUFFERSIZE];
+    int  buffer[16];
 
     uint16_t length;
 
-    uint8_t errorCode = settings_getString_Array("phoneNumbers/type", *buffer, &length);
+    int8_t errorCode = settings_getInt_Array("ChildrenAge", buffer, &length);
 
     return 0;
 }

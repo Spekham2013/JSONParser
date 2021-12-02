@@ -46,7 +46,7 @@ void TEST_settings_getBool(void) {
 
 void TEST_settings_getString_Array(void) {
     char buffer[16][BUFFERSIZE];
-    int length;
+    uint16_t length;
 
     const char test1[][BUFFERSIZE] = {
         "Jack",
@@ -80,6 +80,42 @@ void TEST_settings_getString_Array(void) {
     TEST_ASSERT_EQUAL_STRING(test4[0], buffer[0]);
     TEST_ASSERT_EQUAL_STRING(test4[1], buffer[1]);
 }
+void TEST_settings_getInt_Array(void) {
+    int value[64];
+    uint16_t elements;
+
+    const int test1[] = {
+        123456,
+        65432
+    };
+    settings_getInt_Array("phoneNumbers/DIGIID", value, &elements);
+    TEST_ASSERT_EQUAL(test1[0], value[0]);
+    TEST_ASSERT_EQUAL(test1[1], value[1]);
+
+    const int test2[] = {
+        12,
+        15,
+        18
+    };
+    settings_getInt_Array("ChildrenAge", value, &elements);
+    TEST_ASSERT_EQUAL(test2[0], value[0]);
+    TEST_ASSERT_EQUAL(test2[1], value[1]);
+    TEST_ASSERT_EQUAL(test2[2], value[2]);
+}
+
+void TEST_settings_getBool_Array(void) {
+    bool value[64];
+    uint16_t elements;
+
+    settings_getBool_Array("Geslacht", value, &elements);
+    TEST_ASSERT_TRUE (value[0]);
+    TEST_ASSERT_FALSE(value[1]);
+    TEST_ASSERT_TRUE (value[2]);
+
+    settings_getBool_Array("phoneNumbers/State", value, &elements);
+    TEST_ASSERT_TRUE (value[0]);
+    TEST_ASSERT_FALSE(value[1]);
+}
 
 int main(int argc, char **argv) {
     UNITY_BEGIN();
@@ -91,6 +127,8 @@ int main(int argc, char **argv) {
 
     // Arrays
     RUN_TEST(TEST_settings_getString_Array);
+    RUN_TEST(TEST_settings_getInt_Array);
+    RUN_TEST(TEST_settings_getBool_Array);
 
     UNITY_END();
 

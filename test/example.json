@@ -16,11 +16,15 @@
     "phoneNumbers": [
         {
             "type": "home",
-            "number": "212 555-1234"
+            "number": "212 555-1234",
+            "DIGIID": 123456,
+            "State": true
         },
         {
             "type": "office",
-            "number": "646 555-4567"
+            "number": "646 555-4567",
+            "DIGIID": 65432,
+            "State": false
         }
     ],
     "children": {
@@ -29,6 +33,16 @@
             "Puck"
         ]
     },
+    "ChildrenAge": [
+        12,
+        15,
+        18
+    ],
+    "Geslacht": [
+        true,
+        false,
+        true
+    ],
     "spouse": null,
     "city": "San fransico"
 }
