@@ -15,8 +15,8 @@ char* filePath[BUFFERSIZE];
 /**
 * This function sets the filePath variable.
 */
-void settings_configureFilePath   (char* lfilePath) {
-    strcpy(filePath, lfilePath);
+void settings_configureFilePath(char* lfilePath) {
+    strcpy((char *)filePath, lfilePath);
 }
 
 /**
@@ -258,7 +258,7 @@ int8_t settings_getBool_Array(char* key, bool value[], uint16_t* length) {
 * This function is used to open a file pointer
 */
 int8_t settings_Open(void) {
-    filePointer = fopen(filePath, "r");
+    filePointer = fopen((const char *)filePath, "r");
 
     if (filePointer == NULL) {
         // Log: File pointer not found
