@@ -10,11 +10,14 @@
 #define SUCCES 0
 #define BUFFERSIZE 128
 
-#define SETTINGSFILE "/home/stephan/Documents/Synced/Projects/JSONParser/test/example.json"
-
 // 
 // Functions for users
 // 
+
+/**
+* @brief Set the path to settingsfile
+*/
+void settings_configureFilePath     (char* lfilePath);
 
 /**
 * @brief Function for getting a specific string value

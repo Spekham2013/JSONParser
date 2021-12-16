@@ -6,9 +6,18 @@
 static uint32_t currentLine = 0;
 FILE *filePointer;
 
+char* filePath[BUFFERSIZE];
+
 // 
 // Single functions
 // 
+
+/**
+* This function sets the filePath variable.
+*/
+void settings_configureFilePath   (char* lfilePath) {
+    strcpy(filePath, lfilePath);
+}
 
 /**
 * This function is used to get a distinct string value from a 
@@ -249,11 +258,10 @@ int8_t settings_getBool_Array(char* key, bool value[], uint16_t* length) {
 * This function is used to open a file pointer
 */
 int8_t settings_Open(void) {
-    filePointer = fopen(SETTINGSFILE,"r");
+    filePointer = fopen(filePath, "r");
 
     if (filePointer == NULL) {
         // Log: File pointer not found
-        printf("Encountered ERROR");
         return -1;
     }
 
