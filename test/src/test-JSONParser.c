@@ -3,7 +3,6 @@
 
 #include <JSONParser.h>
 
-
 void TEST_settings_getString(void) {
     char buffer[64];
 

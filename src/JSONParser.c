@@ -250,7 +250,7 @@ int8_t settings_getBool_Array(char* key, bool value[], uint16_t* length) {
 * This function is used to open a file pointer
 */
 int8_t settings_Open(void) {
-    filePointer = fopen("/home/stephan/Documents/Synced/Projects/JSONParser/test/example.json","r");
+    filePointer = fopen(SETTINGSFILE,"r");
 
     if (filePointer == NULL) {
         // Log: File pointer not found
