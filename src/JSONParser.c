@@ -189,7 +189,6 @@ int8_t settings_getInt_Array(char* key, int value[], uint16_t* length) {
             // First strcpy string into buffer
             strcpy(buffer, bufferBuffer[row]);
             
-            int bloop = value[row];
             value[row] = atoi(buffer);
         }
 
