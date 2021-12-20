@@ -7,7 +7,10 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
+#ifndef SUCCES
 #define SUCCES 0
+#endif
+
 #define BUFFERSIZE 128
 
 // 
