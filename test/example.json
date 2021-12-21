@@ -16,9 +16,9 @@
     "phoneNumbers": [
         {
             "type": "home",
-            "number": "212 555-1234",
             "DIGIID": 123456,
-            "State": true
+            "State": true,
+            "number": "212 555-1234"
         },
         {
             "type": "office",

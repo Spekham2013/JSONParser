@@ -6,7 +6,7 @@
 static uint32_t currentLine = 0;
 FILE *filePointer;
 
-char* filePath[BUFFERSIZE];
+char filePath[settingsBUFFERSIZE];
 
 // 
 // Single functions
@@ -16,7 +16,7 @@ char* filePath[BUFFERSIZE];
 * This function sets the filePath variable.
 */
 void settings_configureFilePath(char* lfilePath) {
-    strcpy((char *)filePath, lfilePath);
+    strcpy(filePath, lfilePath);
 }
 
 /**
@@ -35,7 +35,7 @@ int8_t settings_getString   (char* key, char* value) {
         return ret;
     }
 
-    char buffer[BUFFERSIZE];
+    char buffer[settingsBUFFERSIZE];
     currentLine = 0;
     if (settings_Single_getValue(key, buffer, false) != SUCCES) {
         ret = -1;
@@ -73,7 +73,7 @@ int8_t settings_getInt      (char* key, int*  value) {
         return ret;
     }
 
-    char buffer[BUFFERSIZE];
+    char buffer[settingsBUFFERSIZE];
     currentLine = 0;
     if (settings_Single_getValue(key, buffer, false) != SUCCES) {
         ret = -1;
@@ -103,7 +103,7 @@ int8_t settings_getBool     (char* key, bool*  value) {
         return ret;
     }
 
-    char buffer[BUFFERSIZE];
+    char buffer[settingsBUFFERSIZE];
     currentLine = 0;
     if (settings_Single_getValue(key, buffer, false) != SUCCES) {
         ret = -1;
@@ -132,7 +132,7 @@ int8_t settings_getBool     (char* key, bool*  value) {
 * function which retrieves the strings. The function then removes
 * the " from the string and copies it to the output value.
 */
-int8_t settings_getString_Array(char* key, char (*value)[BUFFERSIZE], uint16_t* length) {
+int8_t settings_getString_Array(char* key, char (*value)[settingsBUFFERSIZE], uint16_t* length) {
     int8_t ret = -1;
 
     // Open file
@@ -141,7 +141,7 @@ int8_t settings_getString_Array(char* key, char (*value)[BUFFERSIZE], uint16_t* 
         return ret;
     }
 
-    char buffer[BUFFERSIZE];
+    char buffer[settingsBUFFERSIZE];
     *length = 0;
 
     currentLine = 0;
@@ -186,8 +186,8 @@ int8_t settings_getInt_Array(char* key, int value[], uint16_t* length) {
         return ret;
     }
 
-    char buffer[BUFFERSIZE];
-    char bufferBuffer[64][BUFFERSIZE];
+    char buffer[settingsBUFFERSIZE];
+    char bufferBuffer[64][settingsBUFFERSIZE];
     *length = 0;
 
     currentLine = 0;
@@ -223,8 +223,8 @@ int8_t settings_getBool_Array(char* key, bool value[], uint16_t* length) {
         return ret;
     }
 
-    char buffer[BUFFERSIZE];
-    char bufferBuffer[64][BUFFERSIZE];
+    char buffer[settingsBUFFERSIZE];
+    char bufferBuffer[64][settingsBUFFERSIZE];
     *length = 0;
 
     currentLine = 0;
@@ -258,7 +258,7 @@ int8_t settings_getBool_Array(char* key, bool value[], uint16_t* length) {
 * This function is used to open a file pointer
 */
 int8_t settings_Open(void) {
-    #ifdef FREERTOS
+    #ifdef ESP32
     xSemaphoreTake(xJSONParserSempahore, 0);
     #endif
 
@@ -281,7 +281,7 @@ void   settings_Close(void) {
         fclose(filePointer);
     }
 
-    #ifdef FREERTOS
+    #ifdef ESP32
     xSemaphoreGive(xJSONParserSempahore);
     #endif
 }
@@ -309,7 +309,7 @@ int8_t settings_Single_getValue(char* key, char* value, bool ignoreBraces) {
     }
 
     // Find line containing keyword
-    char buffer[BUFFERSIZE];
+    char buffer[settingsBUFFERSIZE];
 
     uint8_t arrayObjectFlag = 0;
     while (fgets(buffer, sizeof(buffer), filePointer)) {
@@ -407,23 +407,23 @@ int8_t settings_Single_getValue(char* key, char* value, bool ignoreBraces) {
 /**
 * This function is used to retrieve an array of string. This
 * function is not be called by anyone outside this library.
-* Do note that the buffersize must be defined otherwise it is not
+* Do note that the settingsBUFFERSIZE must be defined otherwise it is not
 * how big the buffer wil be.
 */
-int8_t settings_Array_getValue(char* key, char (*value)[BUFFERSIZE], uint16_t* length) {
+int8_t settings_Array_getValue(char* key, char (*value)[settingsBUFFERSIZE], uint16_t* length) {
     uint8_t ret = -1;
 
     char   keyword[64];
     strcpy(keyword, key);
 
     // Isolate keyword
-    char* slashPointer = strrchr(keyword, '/');
+    char* slashPointer = strchr(keyword, '/');
     if (slashPointer != NULL) {
         *slashPointer = '\0';
     }
 
     // Find line containing keyword
-    char buffer[BUFFERSIZE];
+    char buffer[settingsBUFFERSIZE];
 
     uint8_t  arrayObjectFlag  = 0;
     static bool enteredArray;
@@ -532,7 +532,7 @@ int8_t settings_Array_getValue(char* key, char (*value)[BUFFERSIZE], uint16_t* l
                     }
                 } else {
                     // If object inside array
-                    char miniBuffer[BUFFERSIZE];
+                    char miniBuffer[settingsBUFFERSIZE];
                         
                     uint16_t elementcounter = 0;
                     while(fgets(buffer, sizeof(buffer), filePointer)) {

@@ -11,9 +11,9 @@
 #define SUCCES 0
 #endif
 
-#define BUFFERSIZE 128
+#define settingsBUFFERSIZE 128
 
-#ifdef FREERTOS
+#ifdef ESP32
 SemaphoreHandle_t xJSONParserSempahore;
 #endif
 
@@ -57,7 +57,7 @@ int8_t settings_getBool             (char* key, bool*  value);
 * @param length Variable to store the length of the array.
 * @return Returns 0 for SUCCES and -1 for failure.
 */
-int8_t settings_getString_Array     (char* key, char  (*value)[BUFFERSIZE], uint16_t* length);
+int8_t settings_getString_Array     (char* key, char  (*value)[settingsBUFFERSIZE], uint16_t* length);
 
 /**
 * @brief Function for getting array of Ints
@@ -114,6 +114,6 @@ int8_t settings_Single_getValue     (char* key, char*  value, bool ignoreBraces)
 * @param length Pointer that will store the return value for the length of the array.
 * @return Returns 0 for SUCCES and -1 for failure.
 */
-int8_t settings_Array_getValue      (char* key, char (*value)[BUFFERSIZE], uint16_t* length);
+int8_t settings_Array_getValue      (char* key, char (*value)[settingsBUFFERSIZE], uint16_t* length);
 
 #endif
