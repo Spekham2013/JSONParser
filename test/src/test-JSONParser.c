@@ -117,7 +117,7 @@ void TEST_settings_getBool_Array(void) {
 }
 
 int main(int argc, char **argv) {
-    settings_configureFilePath("/home/stephan/Documents/Synced/Projects/JSONParser/test/example.json");
+    settings_configureFilePath("/home/stephan/Documents/Synced/Projects/git/JSONParser/test/example.json");
 
     UNITY_BEGIN();
 

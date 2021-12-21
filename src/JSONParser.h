@@ -13,6 +13,10 @@
 
 #define BUFFERSIZE 128
 
+#ifdef FREERTOS
+SemaphoreHandle_t xJSONParserSempahore;
+#endif
+
 // 
 // Functions for users
 // 

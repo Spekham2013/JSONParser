@@ -258,6 +258,10 @@ int8_t settings_getBool_Array(char* key, bool value[], uint16_t* length) {
 * This function is used to open a file pointer
 */
 int8_t settings_Open(void) {
+    #ifdef FREERTOS
+    xSemaphoreTake(xJSONParserSempahore, 0);
+    #endif
+
     filePointer = fopen((const char *)filePath, "r");
 
     if (filePointer == NULL) {
@@ -276,6 +280,10 @@ void   settings_Close(void) {
     if (filePointer != NULL) {
         fclose(filePointer);
     }
+
+    #ifdef FREERTOS
+    xSemaphoreGive(xJSONParserSempahore);
+    #endif
 }
 
 
