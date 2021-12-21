@@ -11,22 +11,22 @@
         "person1": [
             "Jack",
             "Doe"
+        ],
+        "phoneNumbers": [
+            {
+                "type": "home",
+                "DIGIID": 123456,
+                "State": true,
+                "number": "212 555-1234" 
+            },
+            {
+                "type": "office",
+                "number": "646 555-4567",
+                "DIGIID": 65432,
+                "State": false
+            }
         ]
     },
-    "phoneNumbers": [
-        {
-            "type": "home",
-            "DIGIID": 123456,
-            "State": true,
-            "number": "212 555-1234"
-        },
-        {
-            "type": "office",
-            "number": "646 555-4567",
-            "DIGIID": 65432,
-            "State": false
-        }
-    ],
     "children": {
         "person2": [
             "Piet",

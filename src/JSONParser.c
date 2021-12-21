@@ -577,11 +577,13 @@ int8_t settings_Array_getValue(char* key, char (*value)[settingsBUFFERSIZE], uin
                         }
 
                     }
-                    return SUCCES;
+                    ret = 0;
+                    goto RETURN;
                 }
             } else {
                 if (settings_Array_getValue(slashPointer+1, value, length) == SUCCES) {
-                    return SUCCES;
+                    ret = 0;
+                    goto RETURN;
                 } else {
                     ret = -1;
                     goto RETURN;

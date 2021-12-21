@@ -44,10 +44,10 @@ void TEST_settings_getBool(void) {
 }
 
 void TEST_settings_getString_Array(void) {
-    char buffer[16][BUFFERSIZE];
+    char buffer[16][settingsBUFFERSIZE];
     uint16_t length;
 
-    const char test1[][BUFFERSIZE] = {
+    const char test1[][settingsBUFFERSIZE] = {
         "Jack",
         "Doe"
     };
@@ -55,7 +55,7 @@ void TEST_settings_getString_Array(void) {
     TEST_ASSERT_EQUAL_STRING(test1[0], buffer[0]);
     TEST_ASSERT_EQUAL_STRING(test1[1], buffer[1]);
 
-    const char test2[][BUFFERSIZE] = {
+    const char test2[][settingsBUFFERSIZE] = {
         "Piet",
         "Puck"
     };
@@ -63,19 +63,19 @@ void TEST_settings_getString_Array(void) {
     TEST_ASSERT_EQUAL_STRING(test2[0], buffer[0]);
     TEST_ASSERT_EQUAL_STRING(test2[1], buffer[1]);
 
-    const char test3[][BUFFERSIZE] = {
+    const char test3[][settingsBUFFERSIZE] = {
         "home",
         "office"
     };
-    settings_getString_Array("phoneNumbers/type", *buffer, &length);
+    settings_getString_Array("address/phoneNumbers/type", *buffer, &length);
     TEST_ASSERT_EQUAL_STRING(test3[0], buffer[0]);
     TEST_ASSERT_EQUAL_STRING(test3[1], buffer[1]);
 
-    const char test4[][BUFFERSIZE] = {
+    const char test4[][settingsBUFFERSIZE] = {
         "212 555-1234",
         "646 555-4567"
     };
-    settings_getString_Array("phoneNumbers/number", *buffer, &length);
+    settings_getString_Array("address/phoneNumbers/number", *buffer, &length);
     TEST_ASSERT_EQUAL_STRING(test4[0], buffer[0]);
     TEST_ASSERT_EQUAL_STRING(test4[1], buffer[1]);
 }
@@ -87,7 +87,7 @@ void TEST_settings_getInt_Array(void) {
         123456,
         65432
     };
-    settings_getInt_Array("phoneNumbers/DIGIID", value, &elements);
+    settings_getInt_Array("address/phoneNumbers/DIGIID", value, &elements);
     TEST_ASSERT_EQUAL(test1[0], value[0]);
     TEST_ASSERT_EQUAL(test1[1], value[1]);
 
@@ -111,7 +111,7 @@ void TEST_settings_getBool_Array(void) {
     TEST_ASSERT_FALSE(value[1]);
     TEST_ASSERT_TRUE (value[2]);
 
-    settings_getBool_Array("phoneNumbers/State", value, &elements);
+    settings_getBool_Array("address/phoneNumbers/State", value, &elements);
     TEST_ASSERT_TRUE (value[0]);
     TEST_ASSERT_FALSE(value[1]);
 }
