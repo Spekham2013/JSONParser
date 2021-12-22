@@ -303,7 +303,7 @@ int8_t settings_Single_getValue(char* key, char* value, bool ignoreBraces) {
     strcpy(keyword, key);
 
     // Isolate keyword
-    char* slashPointer = strrchr(keyword, '/');
+    char* slashPointer = strchr(keyword, '/');
     if (slashPointer != NULL) {
         *slashPointer = '\0';
     }
