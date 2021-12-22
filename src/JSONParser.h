@@ -43,6 +43,14 @@ int8_t settings_getString           (char* key, char* value);
 int8_t settings_getInt              (char* key, int*  value);
 
 /**
+* @brief Function for getting a specific float value
+* @param key The key value for the value you want. Example WIFI/Security.
+* @param value Pointer to float. 
+* @return Returns 0 for SUCCES and -1 for failure.
+*/
+int8_t settings_getFloat            (char* key, float*  value);
+
+/**
 * @brief Function for getting a specific bool value
 * @param key The key value for the value you want. Example WIFI/Security.
 * @param value Pointer to boolean. 
@@ -67,6 +75,15 @@ int8_t settings_getString_Array     (char* key, char  (*value)[settingsBUFFERSIZ
 * @return Returns 0 for SUCCES and -1 for failure.
 */
 int8_t settings_getInt_Array        (char* key, int     value[], uint16_t* length);
+
+/**
+* @brief Function for getting array of Floats
+* @param key The key value for the value you want. Example WIFI/Security.
+* @param value Float array to store value in.
+* @param length Variable to store the length of the array.
+* @return Returns 0 for SUCCES and -1 for failure.
+*/
+int8_t settings_getFloat_Array      (char* key, float   value[], uint16_t* length);
 
 /**
 * @brief Function for getting array of Bool

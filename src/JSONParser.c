@@ -88,6 +88,30 @@ int8_t settings_getInt      (char* key, int*  value) {
     return ret;
 }
 
+int8_t settings_getFloat    (char* key, float*  value) {
+    int8_t ret = -1;
+
+    // Open file
+    if (settings_Open() != SUCCES) {
+        // Log: File couldn't be openend
+        return ret;
+    }
+
+    char buffer[settingsBUFFERSIZE];
+    currentLine = 0;
+    if (settings_Single_getValue(key, buffer, false) != SUCCES) {
+        ret = -1;
+    } else {
+        // Convert string value to int
+        *value = atof(buffer);
+
+        ret = 0;
+    }
+    settings_Close();
+
+    return ret;
+}
+
 /**
 * This function is used to get a distinct bool value from a 
 * certain key. It by calling the settings_Single_getValue(..) 
@@ -199,6 +223,37 @@ int8_t settings_getInt_Array(char* key, int value[], uint16_t* length) {
             strcpy(buffer, bufferBuffer[row]);
             
             value[row] = atoi(buffer);
+        }
+
+        ret = 0;
+    }
+    settings_Close();
+
+    return ret;
+}
+
+int8_t settings_getFloat_Array(char* key, float   value[], uint16_t* length) {
+    int8_t ret = -1;
+
+    // Open file
+    if (settings_Open() != SUCCES) {
+        // Log: File couldn't be openend
+        return ret;
+    }
+
+    char buffer[settingsBUFFERSIZE];
+    char bufferBuffer[64][settingsBUFFERSIZE];
+    *length = 0;
+
+    currentLine = 0;
+    if (settings_Array_getValue(key, bufferBuffer, length) != SUCCES) {
+        ret = -1;
+    } else {
+        for (uint16_t row = 0; row < *length; row++) {
+            // First strcpy string into buffer
+            strcpy(buffer, bufferBuffer[row]);
+            
+            value[row] = atof(buffer);
         }
 
         ret = 0;

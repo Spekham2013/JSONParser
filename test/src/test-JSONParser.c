@@ -36,6 +36,16 @@ void TEST_settings_getInt(void) {
     TEST_ASSERT_EQUAL(999, value);
 }
 
+void TEST_settings_getFloat(void) {
+    float value;
+
+    settings_getFloat("ConstantsA", &value);
+    TEST_ASSERT_FLOAT_WITHIN(0.000001, 50.1882057716437, value);
+
+    settings_getFloat("ConstantsB", &value);
+    TEST_ASSERT_FLOAT_WITHIN(0.000001, -85.8243412797992, value);
+}
+
 void TEST_settings_getBool(void) {
     bool value = true;
 
@@ -79,6 +89,7 @@ void TEST_settings_getString_Array(void) {
     TEST_ASSERT_EQUAL_STRING(test4[0], buffer[0]);
     TEST_ASSERT_EQUAL_STRING(test4[1], buffer[1]);
 }
+
 void TEST_settings_getInt_Array(void) {
     int value[64];
     uint16_t elements;
@@ -100,6 +111,28 @@ void TEST_settings_getInt_Array(void) {
     TEST_ASSERT_EQUAL(test2[0], value[0]);
     TEST_ASSERT_EQUAL(test2[1], value[1]);
     TEST_ASSERT_EQUAL(test2[2], value[2]);
+}
+
+void TEST_settings_getFloat_Array(void) {
+    float value[64];
+    uint16_t elements;
+
+    const float test1[] = {
+        60.3250,
+        30.351871,
+        3695.5612
+    };
+    settings_getFloat_Array("children/Floats", value, &elements);
+    TEST_ASSERT_FLOAT_WITHIN(0.000001, test1[0], value[0]);
+    TEST_ASSERT_FLOAT_WITHIN(0.000001, test1[1], value[1]);
+
+    const float test2[] = {
+        234.45511,
+        234.6565497436
+    };
+    settings_getFloat_Array("address/phoneNumbers/Float", value, &elements);
+    TEST_ASSERT_FLOAT_WITHIN(0.000001, test2[0], value[0]);
+    TEST_ASSERT_FLOAT_WITHIN(0.000001, test2[1], value[1]);
 }
 
 void TEST_settings_getBool_Array(void) {
@@ -124,11 +157,13 @@ int main(int argc, char **argv) {
     // Singles
     RUN_TEST(TEST_settings_getString);
     RUN_TEST(TEST_settings_getInt);
+    RUN_TEST(TEST_settings_getFloat);
     RUN_TEST(TEST_settings_getBool);
 
     // Arrays
     RUN_TEST(TEST_settings_getString_Array);
     RUN_TEST(TEST_settings_getInt_Array);
+    RUN_TEST(TEST_settings_getFloat_Array);
     RUN_TEST(TEST_settings_getBool_Array);
 
     UNITY_END();

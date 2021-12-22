@@ -17,13 +17,15 @@
                 "type": "home",
                 "DIGIID": 123456,
                 "State": true,
-                "number": "212 555-1234" 
+                "number": "212 555-1234",
+                "Float": 234.45511
             },
             {
                 "type": "office",
                 "number": "646 555-4567",
                 "DIGIID": 65432,
-                "State": false
+                "State": false,
+                "Float": 234.6565497436
             }
         ]
     },
@@ -31,6 +33,11 @@
         "person2": [
             "Piet",
             "Puck"
+        ],
+        "Floats": [
+            60.3250,
+            30.351871,
+            3695.5612
         ]
     },
     "ChildrenAge": [
@@ -44,5 +51,7 @@
         true
     ],
     "spouse": null,
-    "city": "San fransico"
+    "city": "San fransico",
+    "ConstantsA": 50.1882057716437,
+    "ConstantsB": -85.8243412797992
 }
